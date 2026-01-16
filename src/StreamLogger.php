@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Waffle\Commons\Log;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use JsonException;
 use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
+use Psr\Log\LogLevel;
 use Stringable;
+use Waffle\Commons\Log\Enum\LogChannel;
 
 /**
  * A strict PSR-3 logger that writes JSON-formatted logs to a stream.
@@ -16,21 +19,38 @@ use Stringable;
  */
 final class StreamLogger extends AbstractLogger
 {
+    /**
+     * Standard Monolog/RFC 5424 log levels.
+     */
+    private const LEVELS = [
+        LogLevel::DEBUG => 100,
+        LogLevel::INFO => 200,
+        LogLevel::NOTICE => 250,
+        LogLevel::WARNING => 300,
+        LogLevel::ERROR => 400,
+        LogLevel::CRITICAL => 500,
+        LogLevel::ALERT => 550,
+        LogLevel::EMERGENCY => 600,
+    ];
+
     /** @var resource */
     private $stream;
 
     /**
      * @param string $streamPath The path to the stream (e.g., 'php://stderr', 'php://stdout', '/var/log/app.log').
+     * @param string $channel The log channel name (e.g. 'app', 'security').
      * @param int $permissions UNIX permissions if creating a file (default 0644).
      * @throws InvalidArgumentException If the stream cannot be opened.
      */
     public function __construct(
-        public private(set) string $streamPath = 'php://stderr',
-        public private(set) int $permissions = 0644,
+        private(set) readonly string $streamPath = 'php://stderr',
+        private(set) readonly string $channel = LogChannel::APP,
+        private(set) readonly int $permissions = 0644,
     ) {
         // 'a' mode: Open for writing only; place the file pointer at the end of the file.
+        // 'b' mode: Binary safe mode.
         // If the file does not exist, attempt to create it.
-        $resource = @fopen($this->streamPath, 'a');
+        $resource = @fopen($this->streamPath, 'ab');
 
         if (!is_resource($resource)) {
             throw new InvalidArgumentException(sprintf('The stream "%s" could not be opened.', $this->streamPath));
@@ -64,13 +84,18 @@ final class StreamLogger extends AbstractLogger
 
         // 1. Interpolate message with context (PSR-3 Requirement 1.2)
         $interpolatedMessage = $this->interpolate((string) $message, $context);
+        $levelStr = (string) $level;
 
-        // 2. Build structured payload
+        // 2. Build Symfony/Monolog compatible payload
+        // We force 'context' and 'extra' to be objects {} in JSON if empty, rather than []
         $payload = [
-            'timestamp' => $timestamp->format(DateTimeImmutable::RFC3339_EXTENDED),
-            'level' => (string) $level,
-            'message' => $interpolatedMessage,
-            'context' => $context, // Keep context raw for structured logging analysis
+            'channel'    => $this->channel,
+            'message'    => $interpolatedMessage,
+            'context'    => $context,
+            'level'      => self::LEVELS[$levelStr] ?? 0,
+            'level_name' => strtoupper($levelStr),
+            'datetime'   => $timestamp->format(DateTimeInterface::RFC3339_EXTENDED),
+            'extra'      => [], // Placeholder for future extensibility
         ];
 
         // 3. Encode to JSON
