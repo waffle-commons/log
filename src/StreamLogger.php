@@ -89,13 +89,13 @@ final class StreamLogger extends AbstractLogger
         // 2. Build Symfony/Monolog compatible payload
         // We force 'context' and 'extra' to be objects {} in JSON if empty, rather than []
         $payload = [
-            'channel'    => $this->channel,
-            'message'    => $interpolatedMessage,
-            'context'    => $context,
-            'level'      => self::LEVELS[$levelStr] ?? 0,
+            'channel' => $this->channel,
+            'message' => $interpolatedMessage,
+            'context' => $context,
+            'level' => self::LEVELS[$levelStr] ?? 0,
             'level_name' => strtoupper($levelStr),
-            'datetime'   => $timestamp->format(DateTimeInterface::RFC3339_EXTENDED),
-            'extra'      => [], // Placeholder for future extensibility
+            'datetime' => $timestamp->format(DateTimeInterface::RFC3339_EXTENDED),
+            'extra' => [], // Placeholder for future extensibility
         ];
 
         // 3. Encode to JSON

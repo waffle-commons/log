@@ -15,7 +15,7 @@ count = 1
 [[issues]]
 file = "src/StreamLogger.php"
 code = "literal-named-argument"
-message = "Literal argument `'a'` should be passed as a named argument for clarity."
+message = "Literal argument `'ab'` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
