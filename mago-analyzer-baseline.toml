@@ -7,12 +7,6 @@ message = "Assigning `mixed` type to a variable may lead to unexpected behavior.
 count = 1
 
 [[issues]]
-file = "src/StreamLogger.php"
-code = "undefined-string-array-index"
-message = "Undefined array key 'timestamp' accessed on `array{'channel': string, 'context': array<array-key, mixed>, 'datetime': string, 'extra': array{}, 'level': nonnull, 'level_name': string, 'message': string}`."
-count = 1
-
-[[issues]]
 file = "tests/src/StreamLoggerTest.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `phpunit\framework\assert::assertstringcontainsstring`: expected `string`, but found `mixed`.'
@@ -70,6 +64,12 @@ count = 2
 file = "tests/src/StreamLoggerTest.php"
 code = "possibly-undefined-array-index"
 message = "Possibly undefined array key `string('level')` accessed on `array<array-key, mixed>`."
+count = 1
+
+[[issues]]
+file = "tests/src/StreamLoggerTest.php"
+code = "possibly-undefined-array-index"
+message = "Possibly undefined array key `string('level_name')` accessed on `array<array-key, mixed>`."
 count = 1
 
 [[issues]]

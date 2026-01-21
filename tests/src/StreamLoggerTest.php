@@ -34,11 +34,12 @@ final class StreamLoggerTest extends AbstractTestCase
             $json = json_decode($content, true);
 
             self::assertIsArray($json, 'Log output should be valid JSON');
-            self::assertSame('info', $json['level']);
+            self::assertSame(200, $json['level']);
+            self::assertSame('INFO', $json['level_name']);
             self::assertSame('User waffle_bot logged in', $json['message']);
             self::assertSame('waffle_bot', $json['context']['username']);
             self::assertSame(42, $json['context']['id']);
-            self::assertArrayHasKey('timestamp', $json);
+            self::assertArrayHasKey('datetime', $json);
         } finally {
             // Cleanup
             if (file_exists($tempFile)) {
@@ -50,8 +51,8 @@ final class StreamLoggerTest extends AbstractTestCase
     public function testItThrowsExceptionForInvalidStream(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // Trying to open a root directory as a file should fail
-        new StreamLogger('/root/protected_file.log');
+        // Use an invalid protocol to guarantee failure regardless of filesystem permissions
+        new StreamLogger('invalid-protocol://stream');
     }
 
     public function testContextInterpolationComplex(): void

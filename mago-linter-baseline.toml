@@ -40,7 +40,7 @@ count = 2
 file = "tests/src/StreamLoggerTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
-count = 10
+count = 11
 
 [[issues]]
 file = "tests/src/StreamLoggerTest.php"

@@ -107,7 +107,7 @@ final class StreamLogger extends AbstractLogger
             // Fallback for non-encodable data (e.g. recursion or binary data in context)
             // We must NEVER crash the app just because logging failed.
             $line = json_encode([
-                'timestamp' => $payload['timestamp'],
+                'timestamp' => $payload['datetime'],
                 'level' => 'critical',
                 'message' => 'Log Serialization Failed: ' . $e->getMessage(),
             ], JSON_THROW_ON_ERROR);
