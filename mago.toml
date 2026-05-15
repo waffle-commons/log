@@ -71,4 +71,10 @@ ignore = [
         "tests/",
         "src/",
     ] },
+    { code = "possibly-false-argument", in = [
+        "tests/",
+    ] },
+    { code = "mixed-array-access", in = [
+        "tests/",
+    ] },
 ]

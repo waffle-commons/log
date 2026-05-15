@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WaffleTests\Commons\Log;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use Psr\Log\InvalidArgumentException;
 use Waffle\Commons\Log\StreamLogger;
 
@@ -48,6 +49,7 @@ final class StreamLoggerTest extends AbstractTestCase
         }
     }
 
+    #[WithoutErrorHandler]
     public function testItThrowsExceptionForInvalidStream(): void
     {
         $this->expectException(InvalidArgumentException::class);
