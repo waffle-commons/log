@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Waffle\Commons\Log\Enum;
+namespace Waffle\Commons\Log\Channel;
 
 /**
  * Standardized log channels for the Waffle Ecosystem.

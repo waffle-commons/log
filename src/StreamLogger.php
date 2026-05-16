@@ -11,7 +11,7 @@ use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Stringable;
-use Waffle\Commons\Log\Enum\LogChannel;
+use Waffle\Commons\Log\Channel\LogChannel;
 
 /**
  * A strict PSR-3 logger that writes JSON-formatted logs to a stream.
