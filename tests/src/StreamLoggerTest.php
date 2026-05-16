@@ -53,8 +53,13 @@ final class StreamLoggerTest extends AbstractTestCase
     public function testItThrowsExceptionForInvalidStream(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // Use an invalid protocol to guarantee failure regardless of filesystem permissions
-        new StreamLogger('invalid-protocol://stream');
+        // Swallow the fopen warning so the test output stays clean; the exception is what we assert on.
+        set_error_handler(static fn(): bool => true);
+        try {
+            new StreamLogger('invalid-protocol://stream');
+        } finally {
+            restore_error_handler();
+        }
     }
 
     public function testContextInterpolationComplex(): void
