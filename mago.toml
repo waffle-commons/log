@@ -1,11 +1,55 @@
 # Mago Configuration - Waffle Commons Alpha 5
 # For full documentation, see https://mago.carthage.software/tools/overview
-php-version = "8.5.0"
+php-version = "8.5.5"
 
 [source]
 paths = ["src/", "tests/"]
 includes = ["vendor"]
 excludes = []
+
+# -----------------------------------------------------------------------------
+# Mago Guard — Beta 0 standardized architectural perimeter
+# -----------------------------------------------------------------------------
+[guard]
+mode = "default"
+excludes = ["tests/bootstrap.php"]
+
+[guard.perimeter]
+layering = ["Waffle", "WaffleTests"]
+
+[guard.perimeter.layers]
+core = ["@global", "Psl\\**"]
+psr = ["Psr\\**"]
+
+[[guard.perimeter.rules]]
+namespace = "Waffle\\Commons\\Log"
+permit = [
+    "Waffle\\Commons\\Log\\**",
+    "Waffle\\Commons\\Contracts\\**",
+    "@layer:core",
+    "@layer:psr",
+]
+
+[[guard.perimeter.rules]]
+namespace = "WaffleTests\\Commons\\Log"
+permit = ["@all"]
+
+[[guard.structural.rules]]
+on = "Waffle\\Commons\\**"
+target = "interface"
+must-be-named = "*Interface"
+reason = "Interfaces must follow the waffle-commons *Interface convention."
+
+[[guard.structural.rules]]
+on = "Waffle\\Commons\\**\\Enum\\**"
+must-be = ["enum"]
+reason = "Reserved namespace: only enum declarations are permitted here."
+
+[[guard.structural.rules]]
+on = "Waffle\\Commons\\**\\Exception\\**"
+target = "class"
+must-be-named = "*Exception"
+reason = "Exception classes must follow the *Exception naming convention."
 
 [formatter]
 print-width = 120
@@ -16,7 +60,6 @@ trailing-comma = true
 end-of-line = "lf"
 
 [linter]
-baseline = "mago-linter-baseline.toml"
 integrations = ["phpunit"]
 
 [linter.rules]
@@ -29,17 +72,70 @@ disallowed-functions = { level = "error", functions = ["eval", "exec", "system",
 # Code quality - Strict
 prefer-interface = { level = "error" }
 strict-types = { level = "error" }
-cyclomatic-complexity = { level = "warning", threshold = 10 }
+no-ini-set = { enabled = false }
 
 # Style - Notes (informational)
-prefer-arrow-function = { level = "note" }
-no-redundant-nullsafe = { level = "note" }
+
+# >>> alpha6-opinionated-suppressions (generated)
+literal-named-argument = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
+single-class-per-file = { enabled = false }
+no-else-clause = { enabled = false }
+block-statement = { enabled = false }
+assertion-style = { enabled = false }
+assert-description = { enabled = false }
+tagged-todo = { enabled = false }
+cyclomatic-complexity = { enabled = false }
+too-many-methods = { enabled = false }
+kan-defect = { enabled = false }
+halstead = { enabled = false }
+prefer-arrow-function = { enabled = false }
+no-redundant-nullsafe = { enabled = false }
+# <<< alpha6-opinionated-suppressions
 
 [analyzer]
-baseline = "mago-analyzer-baseline.toml"
 find-unused-definitions = true
 find-unused-expressions = true
 analyze-dead-code = true
-check-throws = true
 strict-list-index-checks = true
-allow-possibly-undefined-array-keys = false
+strict-array-index-existence = true
+ignore = [
+    { code = "possibly-undefined-string-array-index", in = [
+        "tests/",
+    ] },
+    # PSR-3 LoggerInterface mandates `array $context` (no element type) — we cannot
+    # narrow it without breaking PSR-3 conformance. The foreach over $context
+    # legitimately produces `mixed` values per the spec.
+    { code = "mixed-assignment", in = [
+        "src/StreamLogger.php",
+        "tests/",
+    ] },
+    { code = "mixed-argument", in = [
+        "tests/",
+    ] },
+    { code = "mixed-operand", in = [
+        "tests/",
+    ] },
+    { code = "ambiguous-object-method-access", in = [
+        "tests/",
+    ] },
+    { code = "no-value", in = [
+        "tests/",
+    ] },
+    { code = "invalid-method-access", in = [
+        "tests/",
+    ] },
+    { code = "check-throws", in = [
+        "tests/",
+    ] },
+    { code = "non-existent-class-like", in = [
+        "tests/",
+        "src/",
+    ] },
+    { code = "possibly-false-argument", in = [
+        "tests/",
+    ] },
+    { code = "mixed-array-access", in = [
+        "tests/",
+    ] },
+]

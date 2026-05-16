@@ -11,7 +11,7 @@ use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Stringable;
-use Waffle\Commons\Log\Enum\LogChannel;
+use Waffle\Commons\Log\Channel\LogChannel;
 
 /**
  * A strict PSR-3 logger that writes JSON-formatted logs to a stream.
@@ -45,12 +45,12 @@ final class StreamLogger extends AbstractLogger
     public function __construct(
         private(set) readonly string $streamPath = 'php://stderr',
         private(set) readonly string $channel = LogChannel::APP,
-        private(set) readonly int $permissions = 0644,
+        private(set) readonly int $permissions = 0o644,
     ) {
         // 'a' mode: Open for writing only; place the file pointer at the end of the file.
         // 'b' mode: Binary safe mode.
         // If the file does not exist, attempt to create it.
-        $resource = @fopen($this->streamPath, 'ab');
+        $resource = fopen($this->streamPath, 'ab');
 
         if (!is_resource($resource)) {
             throw new InvalidArgumentException(sprintf('The stream "%s" could not be opened.', $this->streamPath));
@@ -59,7 +59,7 @@ final class StreamLogger extends AbstractLogger
         // Apply permissions if it's a regular file and we just created/opened it
         // We do not chmod streams like php://stdout
         if (str_starts_with($this->streamPath, 'php://') === false && file_exists($this->streamPath)) {
-            @chmod($this->streamPath, $this->permissions);
+            chmod($this->streamPath, $this->permissions);
         }
 
         $this->stream = $resource;
@@ -133,9 +133,11 @@ final class StreamLogger extends AbstractLogger
         $replace = [];
         foreach ($context as $key => $val) {
             // Check that the value can be cast to string
-            if (!is_array($val) && (!is_object($val) || method_exists($val, '__toString'))) {
-                $replace['{' . $key . '}'] = (string) $val;
+            if (!(!is_array($val) && (!is_object($val) || method_exists($val, '__toString')))) {
+                continue;
             }
+
+            $replace['{' . $key . '}'] = (string) $val;
         }
 
         return strtr($message, $replace);

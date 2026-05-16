@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Waffle\Commons\Log\Enum;
+namespace Waffle\Commons\Log\Channel;
 
 /**
  * Standardized log channels for the Waffle Ecosystem.
@@ -13,25 +13,25 @@ final class LogChannel
     /**
      * Userland application logic (Controllers, Domain Services).
      */
-    public const APP = 'app';
+    public const string APP = 'app';
 
     /**
      * Framework internals (Kernel, Container, Boot process).
      */
-    public const CORE = 'core';
+    public const string CORE = 'core';
 
     /**
      * HTTP Layer (Requests, Responses, Routing errors).
      */
-    public const HTTP = 'http';
+    public const string HTTP = 'http';
 
     /**
      * Security Layer (Authentication, Authorization, Firewall).
      */
-    public const SECURITY = 'sec';
+    public const string SECURITY = 'sec';
 
     /**
      * Compliance & Audit Trail (Critical business actions).
      */
-    public const AUDIT = 'audit';
+    public const string AUDIT = 'audit';
 }

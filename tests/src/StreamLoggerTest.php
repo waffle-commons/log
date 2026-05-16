@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WaffleTests\Commons\Log;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use Psr\Log\InvalidArgumentException;
 use Waffle\Commons\Log\StreamLogger;
 
@@ -29,17 +30,17 @@ final class StreamLoggerTest extends AbstractTestCase
 
             // 3. Assert
             $content = file_get_contents($tempFile);
-            $this->assertNotEmpty($content, 'Log file should not be empty');
+            static::assertNotEmpty($content, 'Log file should not be empty');
 
             $json = json_decode($content, true);
 
-            self::assertIsArray($json, 'Log output should be valid JSON');
-            self::assertSame(200, $json['level']);
-            self::assertSame('INFO', $json['level_name']);
-            self::assertSame('User waffle_bot logged in', $json['message']);
-            self::assertSame('waffle_bot', $json['context']['username']);
-            self::assertSame(42, $json['context']['id']);
-            self::assertArrayHasKey('datetime', $json);
+            static::assertIsArray($json, 'Log output should be valid JSON');
+            static::assertSame(200, $json['level']);
+            static::assertSame('INFO', $json['level_name']);
+            static::assertSame('User waffle_bot logged in', $json['message']);
+            static::assertSame('waffle_bot', $json['context']['username']);
+            static::assertSame(42, $json['context']['id']);
+            static::assertArrayHasKey('datetime', $json);
         } finally {
             // Cleanup
             if (file_exists($tempFile)) {
@@ -48,11 +49,17 @@ final class StreamLoggerTest extends AbstractTestCase
         }
     }
 
+    #[WithoutErrorHandler]
     public function testItThrowsExceptionForInvalidStream(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        // Use an invalid protocol to guarantee failure regardless of filesystem permissions
-        new StreamLogger('invalid-protocol://stream');
+        // Swallow the fopen warning so the test output stays clean; the exception is what we assert on.
+        set_error_handler(static fn(): bool => true);
+        try {
+            new StreamLogger('invalid-protocol://stream');
+        } finally {
+            restore_error_handler();
+        }
     }
 
     public function testContextInterpolationComplex(): void
@@ -75,7 +82,7 @@ final class StreamLoggerTest extends AbstractTestCase
         $content = file_get_contents($tempFile);
         $json = json_decode($content, true);
 
-        self::assertSame('Error: 500 on StringableObj', $json['message']);
+        static::assertSame('Error: 500 on StringableObj', $json['message']);
 
         unlink($tempFile);
     }
@@ -94,8 +101,8 @@ final class StreamLoggerTest extends AbstractTestCase
         $content = file_get_contents($tempFile);
         $json = json_decode($content, true);
 
-        self::assertSame('critical', $json['level']);
-        self::assertStringContainsString('Log Serialization Failed', $json['message']);
+        static::assertSame('critical', $json['level']);
+        static::assertStringContainsString('Log Serialization Failed', $json['message']);
 
         unlink($tempFile);
     }
