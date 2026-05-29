@@ -9,7 +9,7 @@
 Waffle Log Component
 ====================
 
-> **Release:** `v0.1.0-beta1`
+> **Release:** `v0.1.0-beta2` &nbsp;|&nbsp; [`CHANGELOG.md`](./CHANGELOG.md)
 > **PSR Compliance:** PSR-3 (`Psr\Log\AbstractLogger`)
 
 A strict, container-native logger that emits one JSON line per record onto a stream. Designed for Docker/Kubernetes deployments where `stdout`/`stderr` are the log sinks — no buffering, no per-process state, safe across FrankenPHP worker requests.
@@ -84,6 +84,21 @@ final class LogChannel
 - Stream is opened in the constructor and closed in `__destruct()`, preventing file-descriptor leaks across long-running workers.
 - No per-call buffering; each `log()` call writes immediately.
 - No static state. Multiple `StreamLogger` instances can co-exist (one per channel, for example).
+
+## 🧭 Architectural boundary (`mago guard`)
+
+An active dependency **perimeter** is enforced on every CI run by `vendor/bin/mago guard` (bundled into `composer mago`; zero baselines). The rules live in [`mago.toml`](./mago.toml) under `[guard.perimeter]` — a forbidden `use` statement fails the build, not a reviewer.
+
+Production code under `Waffle\Commons\Log` may depend **only** on:
+
+- `Waffle\Commons\Log\**` — itself
+- `Waffle\Commons\Contracts\**` — the shared contracts package, the **only** Waffle dependency permitted
+- `Psr\**` — PSR interfaces (PSR-3)
+- `@global` + `Psl\**` — PHP core and the PHP Standard Library
+
+Test code under `WaffleTests\Commons\Log` is unrestricted (`@all`). Structural rules are guarded too: interfaces must be named `*Interface`, `Exception\**` classes must end in `*Exception`, and any `Enum\**` namespace may hold only `enum` declarations.
+
+Contract-first, component-agnostic by construction: components compose through `waffle-commons/contracts`, never directly through one another.
 
 ## 🧪 Testing
 
