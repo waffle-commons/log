@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Released in lockstep with the Waffle Commons umbrella tag.
 
+## [0.1.0-beta5] — 2026-06-26
+
+**Theme: static-analysis hardening.**
+
+### Changed
+- Enabled the Mago `cyclomatic-complexity` lint rule with a `threshold = 50` ratchet in [`mago.toml`](./mago.toml). Config-only change — no source or behavioural changes in this component since `0.1.0-beta4`.
+
 ## [0.1.0-beta4] — 2026-06-13
 
 ### Changed
