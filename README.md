@@ -107,6 +107,12 @@ Contract-first, component-agnostic by construction: components compose through `
 docker exec -w /waffle-commons/log waffle-dev composer tests
 ```
 
+## 📚 Documentation
+
+Central framework docs live in the [waffle-commons/documentation](https://github.com/waffle-commons/documentation) repository:
+
+- Reference: [log](https://github.com/waffle-commons/documentation/blob/main/reference/log.md)
+
 ## 📄 License
 
 MIT — see [LICENSE.md](./LICENSE.md).
