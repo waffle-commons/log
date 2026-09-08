@@ -10,7 +10,7 @@
 Waffle Log Component
 ====================
 
-> **Release:** `0.1.0-beta5` &nbsp;|&nbsp; [`CHANGELOG.md`](./CHANGELOG.md)
+> **Release:** `0.1.0-beta6` &nbsp;|&nbsp; [`CHANGELOG.md`](./CHANGELOG.md)
 > **PSR Compliance:** PSR-3 (`Psr\Log\AbstractLogger`)
 
 A strict, container-native logger that emits one JSON line per record onto a stream. Designed for Docker/Kubernetes deployments where `stdout`/`stderr` are the log sinks — no buffering, no per-process state, safe across FrankenPHP worker requests.
@@ -106,6 +106,12 @@ Contract-first, component-agnostic by construction: components compose through `
 ```bash
 docker exec -w /waffle-commons/log waffle-dev composer tests
 ```
+
+## 📚 Documentation
+
+Central framework docs live in the [waffle-commons/documentation](https://github.com/waffle-commons/documentation) repository:
+
+- Reference: [log](https://github.com/waffle-commons/documentation/blob/main/reference/log.md)
 
 ## 📄 License
 
