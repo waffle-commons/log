@@ -6,6 +6,7 @@ namespace Waffle\Commons\Log;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use IgorPhp\IgorBundle\Attribute\WorkerSafe;
 use JsonException;
 use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
@@ -68,6 +69,9 @@ final class StreamLogger extends AbstractLogger
     /**
      * Closes the resource when the logger is destroyed to prevent leaks in long-running processes.
      */
+    #[WorkerSafe(
+        reason: 'every record is written immediately (no buffer); the destructor only closes the process-lifetime stream at worker shutdown',
+    )]
     public function __destruct()
     {
         if (is_resource($this->stream)) {
